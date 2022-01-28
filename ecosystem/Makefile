@@ -46,7 +46,7 @@ deploy_datawarehouse :
 	-e MYSQL_PASSWORD=${DATA_WAREHOUSE_USER_PW} \
 	-d mysql:8.0
 
-deploy_all : deploy_datalake deploy_datawarehouse
+deploy_databases : deploy_datalake deploy_datawarehouse
 
 
 # Start the docker containers in case they aren't running
@@ -59,7 +59,7 @@ start_datawarehouse :
 	@echo "\nStarting Datawarehouse Container ... "
 	@docker container start ${datawarehouse_container}
 
-start_all : start_datalake start_datawarehouse
+start_databases : start_datalake start_datawarehouse
 
 
 # Stop the running containers
@@ -72,7 +72,7 @@ stop_datawarehouse :
 	@echo "\nStopping Datawarehouse Container ... "
 	@docker container stop ${datawarehouse_container}
 
-stop_all : stop_datalake stop_datawarehouse
+stop_databases : stop_datalake stop_datawarehouse
 
 
 # Log-in to the mysql databases of the containers
@@ -102,4 +102,4 @@ destroy_datawarehouse : \
 	@echo "\nRemoving Datawarehouse Container Volume ... "
 	@docker volume rm ${datawarehouse_volume}
 
-destroy_all : destroy_datalake destroy_datawarehouse
+destroy_databases : destroy_datalake destroy_datawarehouse

@@ -1,6 +1,11 @@
 import numpy as np
 import pandas as pd
 import requests
+import multiprocessing
+import random
+import time
+from functools import partial
+
 
 def seniority(job_title):
     """
@@ -30,11 +35,14 @@ def get_geocode(address):
     Grab the geocode for any street address
     """
 
+    print(f'Grabbing Geocode for {address} ... ')
+
     geo_api = "https://nominatim.openstreetmap.org/search"
     params = {'q': address, 'format': 'jsonv2'}
     response = requests.get(geo_api, params=params).json()
+    output = {'lat': response[0]['lat'], 'lng': response[0]['lon']}
 
-    return {'lat': response[0]['lat'], 'lng': response[0]['lon']}
+    return output
 
 
 def cleanup(raw_data):
@@ -72,8 +80,15 @@ def cleanup(raw_data):
         raw_data['Company Name'].str.replace(regex_pattern, '', regex=True)
 
     # Add latitude and longitude for geocoding
+    api_time0 = time.time()
+    location_data = raw_data[['Location']]
+    print(f"About to do {location_data.shape[0]} API requests now. Sorry my dear API...")
+
     raw_data[['Latitude', 'Longitude']] = \
-        raw_data[['Location']].apply(get_geocode, axis=1, result_type='expand')
+        location_data.apply(get_geocode, axis=1, result_type='expand')
+
+    print(f"Did {location_data.shape[0]} API requests now")
+    print(f'It took {time.time() - api_time0} seconds')
 
     # Get rid off the garbage
     # Drop some columns with irrelevant information and garbage raw_data

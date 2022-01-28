@@ -1,6 +1,8 @@
 import pandas as pd
 import database_connection
+import time
 
+start = time.time()
 
 # Connect to the datalake
 datalake_connection = database_connection.connect_to_datalake()
@@ -13,3 +15,5 @@ raw_data.to_sql('da_jobs', datalake_connection, if_exists='replace')
 
 # Close the database connection
 datalake_connection.close()
+
+print(f'DataAnalyst.csv loaded onto Datalake in {time.time() - start} seconds')
